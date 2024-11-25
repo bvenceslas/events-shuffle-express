@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,6 +17,16 @@ export class EventsService {
   ) {}
 
   async create(createEventDto: EventsDto) {
+    // handle duplicated events
+    const eventName = createEventDto.name.trim();
+    const duplicatedEvent = this.findOneByName(eventName);
+
+    if (duplicatedEvent) {
+      throw new ConflictException(
+        `Event [${eventName}] already exists, please use another name`,
+      );
+    }
+
     const newEvent = new this.eventModel(createEventDto);
     const createdEvent = await newEvent.save();
     return createdEvent._id;
