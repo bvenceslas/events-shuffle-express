@@ -16,10 +16,10 @@ export class EventsService {
     private readonly eventModel: Model<Events>,
   ) {}
 
-  async create(createEventDto: EventsDto) {
+  async createV1(createEventDto: EventsDto) {
     // handle duplicated events
     const eventName = createEventDto.name.trim();
-    const duplicatedEvent = this.findOneByName(eventName);
+    const duplicatedEvent = this.findOneByNameV1(eventName);
 
     if (duplicatedEvent) {
       throw new ConflictException(
@@ -32,21 +32,21 @@ export class EventsService {
     return createdEvent._id;
   }
 
-  async findAll() {
+  async findAllV1() {
     return await this.eventModel.find({}).exec();
   }
 
-  async findOneById(eventId: string) {
+  async findOneByIdV1(eventId: string) {
     return await this.eventModel.findOne({ _id: eventId });
   }
 
-  async findOneByName(eventName: string) {
+  async findOneByNameV1(eventName: string) {
     return await this.eventModel.findOne({ name: eventName });
   }
 
-  async update(eventId: string, eventData: EventsDto) {
+  async updateV1(eventId: string, eventData: EventsDto) {
     // check if the event exists
-    const foundEvent = this.findOneById(eventId);
+    const foundEvent = this.findOneByIdV1(eventId);
 
     if (!foundEvent) {
       throw new NotFoundException(`Event with id ${eventId} not found!`);

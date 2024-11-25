@@ -23,7 +23,7 @@ export class ParticipantService {
 
     if (duplicatedParticipant) {
       throw new ConflictException(
-        `Name [${participantName}] already taken, please use another name `,
+        `Name [${participantName}] already taken, please use another name`,
       );
     }
 
@@ -37,7 +37,7 @@ export class ParticipantService {
   }
 
   async findOneById(participantId: string) {
-    return await this.participantModel.findOne({ id: participantId });
+    return await this.participantModel.findOne({ _id: participantId });
   }
 
   async findOneByName(participantName) {
