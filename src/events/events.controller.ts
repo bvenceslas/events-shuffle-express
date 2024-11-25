@@ -3,32 +3,35 @@ import { EventsService } from './events.service';
 import { EventsDto } from './dto/events.dto';
 import { Events } from './models/events.model';
 
-@Controller('events')
+@Controller({
+  path: 'event',
+  version: '1',
+})
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  async createEvent(@Body() createEventDto: EventsDto) {
-    return await this.eventsService.create(createEventDto);
+  async createEventV1(@Body() createEventDto: EventsDto) {
+    return await this.eventsService.createV1(createEventDto);
   }
 
   @Get()
-  async getAllEvents() {
-    return await this.eventsService.findAll();
+  async getAllEventsV1() {
+    return await this.eventsService.findAllV1();
   }
 
   @Get(':id')
-  async getEventById(@Param('id') eventId: string) {
-    return await this.eventsService.findOneById(eventId);
+  async getEventByIdV1(@Param('id') eventId: string) {
+    return await this.eventsService.findOneByIdV1(eventId);
   }
 
   @Get('/name/:name')
-  async getEventByName(@Param('name') eventName: string) {
-    return await this.eventsService.findOneByName(eventName);
+  async getEventByNameV1(@Param('name') eventName: string) {
+    return await this.eventsService.findOneByNameV1(eventName);
   }
 
   @Put(':id')
-  async updateEvent(@Param('id') eventId: string, @Body() data: EventsDto) {
-    return await this.eventsService.update(eventId, data);
+  async updateEventV1(@Param('id') eventId: string, @Body() data: EventsDto) {
+    return await this.eventsService.updateV1(eventId, data);
   }
 }
