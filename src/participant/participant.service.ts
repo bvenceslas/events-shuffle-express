@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,6 +17,16 @@ export class ParticipantService {
   ) {}
 
   async create(createParticipantDto: ParticipantDto) {
+    // handle duplicated participant
+    const participantName = createParticipantDto.name.trim();
+    const duplicatedParticipant = this.findOneByName(participantName);
+
+    if (duplicatedParticipant) {
+      throw new ConflictException(
+        `Name [${participantName}] already taken, please use another name `,
+      );
+    }
+
     const newParticipant = new this.participantModel(createParticipantDto);
     const createdParticipant = await newParticipant.save();
     return createdParticipant;
