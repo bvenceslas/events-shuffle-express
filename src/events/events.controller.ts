@@ -31,6 +31,11 @@ export class EventsController {
     return await this.eventsService.findOneByName(eventName);
   }
 
+  @Get(':id/results')
+  async getSuitableDates(@Param('id') eventId: string) {
+    return await this.eventsService.findSuitableDates(eventId);
+  }
+
   @Put(':id')
   async updateEvent(@Param('id') eventId: string, @Body() data: EventsDto) {
     return await this.eventsService.update(eventId, data);
@@ -38,8 +43,6 @@ export class EventsController {
 
   @Put(':id/vote')
   async voteEvent(@Param('id') eventId: string, @Body() data: VoteEventDto) {
-    const vote = await this.eventsService.createVote(eventId, data);
-    console.log('vote :>> ', vote);
-    return vote;
+    return await this.eventsService.createVote(eventId, data);
   }
 }
