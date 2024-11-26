@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsDto } from './dto/events.dto';
 import { Events } from './models/events.model';
+import { VoteEventDto } from './dto/events.vote.dto';
 
 @Controller({
   path: 'event',
@@ -33,5 +34,10 @@ export class EventsController {
   @Put(':id')
   async updateEventV1(@Param('id') eventId: string, @Body() data: EventsDto) {
     return await this.eventsService.updateV1(eventId, data);
+  }
+
+  @Put(':id/vote')
+  async voteEventV1(@Param('id') eventId: string, @Body() data: VoteEventDto) {
+    return await this.eventsService.createVoteV1(eventId, data);
   }
 }

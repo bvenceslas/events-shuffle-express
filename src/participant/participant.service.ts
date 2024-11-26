@@ -19,7 +19,7 @@ export class ParticipantService {
   async create(createParticipantDto: ParticipantDto) {
     // handle duplicated participant
     const participantName = createParticipantDto.name.trim();
-    const duplicatedParticipant = this.findOneByName(participantName);
+    const duplicatedParticipant = await this.findOneByName(participantName);
 
     if (duplicatedParticipant) {
       throw new ConflictException(
@@ -37,11 +37,13 @@ export class ParticipantService {
   }
 
   async findOneById(participantId: string) {
-    return await this.participantModel.findOne({ _id: participantId });
+    return await this.participantModel.findOne({ _id: participantId }).lean();
   }
 
   async findOneByName(participantName) {
-    return await this.participantModel.findOne({ name: participantName });
+    return await this.participantModel
+      .findOne({ name: participantName })
+      .lean();
   }
 
   async update(participantId: string, data: ParticipantDto) {
@@ -54,8 +56,8 @@ export class ParticipantService {
       );
     }
 
-    const updatedParticipant = await this.participantModel.updateOne(
-      { _id: participantId },
+    const updatedParticipant = await this.participantModel.findByIdAndUpdate(
+      participantId,
       { ...data },
     );
 
