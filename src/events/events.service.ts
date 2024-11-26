@@ -52,6 +52,34 @@ export class EventsService {
     return await this.eventModel.findOne({ name: eventName }).lean();
   }
 
+  async findSuitableDates(eventId: string) {
+    const foundEvent = await this.findOneById(eventId);
+
+    if (!foundEvent) {
+      throw new NotFoundException(`Event with id ${eventId} not found!`);
+    }
+
+    let suitableVote = foundEvent.votes[0];
+    let suitableDates = [suitableVote];
+
+    for (let i = 1; i < foundEvent.votes.length; i++) {
+      if (foundEvent.votes[i].people.length > suitableVote.people.length) {
+        suitableVote = foundEvent.votes[i];
+        suitableDates = [suitableVote];
+      } else if (
+        foundEvent.votes[i].people.length === suitableVote.people.length
+      ) {
+        suitableDates.push(foundEvent.votes[i]);
+      }
+    }
+
+    return {
+      id: foundEvent._id,
+      name: foundEvent.name,
+      suitableDates,
+    };
+  }
+
   async update(eventId: string, eventData: EventsDto) {
     // check if the event exists
     const foundEvent = await this.findOneById(eventId);
