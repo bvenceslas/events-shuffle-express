@@ -4,33 +4,33 @@ import { ParticipantDto } from './dto/participant.dto';
 
 @Controller({
   path: 'participant',
-  version: '1',
+  version: 'v1',
 })
 export class ParticipantController {
   constructor(private readonly participantService: ParticipantService) {}
 
   @Post()
-  async createV1(@Body() createParticipantDto: ParticipantDto) {
+  async create(@Body() createParticipantDto: ParticipantDto) {
     return await this.participantService.create(createParticipantDto);
   }
 
   @Get()
-  async getAllParticipantsV1() {
+  async getAllParticipants() {
     return await this.participantService.findAll();
   }
 
   @Get(':id')
-  async getParticipantByIdV1(@Param('id') participantId: string) {
+  async getParticipantById(@Param('id') participantId: string) {
     return await this.participantService.findOneById(participantId);
   }
 
   @Get('/name/:name')
-  async getParticipantByNameV1(@Param('name') participantName: string) {
+  async getParticipantByName(@Param('name') participantName: string) {
     return await this.participantService.findOneByName(participantName);
   }
 
   @Put(':id')
-  async updateV1(
+  async update(
     @Param('id') participantId: string,
     @Body() updateParticipantDto: ParticipantDto,
   ) {
