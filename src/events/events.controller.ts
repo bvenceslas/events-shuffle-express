@@ -1,37 +1,45 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsDto } from './dto/events.dto';
-import { Events } from './models/events.model';
+import { VoteEventDto } from './dto/events.vote.dto';
+// import { Events } from './models/events.model';
 
 @Controller({
   path: 'event',
-  version: '1',
+  version: 'v1',
 })
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  async createEventV1(@Body() createEventDto: EventsDto) {
-    return await this.eventsService.createV1(createEventDto);
+  async createEvent(@Body() createEventDto: EventsDto) {
+    return await this.eventsService.create(createEventDto);
   }
 
   @Get()
-  async getAllEventsV1() {
-    return await this.eventsService.findAllV1();
+  async getAllEvents() {
+    return await this.eventsService.findAll();
   }
 
   @Get(':id')
-  async getEventByIdV1(@Param('id') eventId: string) {
-    return await this.eventsService.findOneByIdV1(eventId);
+  async getEventById(@Param('id') eventId: string) {
+    return await this.eventsService.findOneById(eventId);
   }
 
   @Get('/name/:name')
-  async getEventByNameV1(@Param('name') eventName: string) {
-    return await this.eventsService.findOneByNameV1(eventName);
+  async getEventByName(@Param('name') eventName: string) {
+    return await this.eventsService.findOneByName(eventName);
   }
 
   @Put(':id')
-  async updateEventV1(@Param('id') eventId: string, @Body() data: EventsDto) {
-    return await this.eventsService.updateV1(eventId, data);
+  async updateEvent(@Param('id') eventId: string, @Body() data: EventsDto) {
+    return await this.eventsService.update(eventId, data);
+  }
+
+  @Put(':id/vote')
+  async voteEvent(@Param('id') eventId: string, @Body() data: VoteEventDto) {
+    const vote = await this.eventsService.createVote(eventId, data);
+    console.log('vote :>> ', vote);
+    return vote;
   }
 }
