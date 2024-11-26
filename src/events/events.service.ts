@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Events, TypeVote } from './models/events.model';
+import { Events } from './models/events.model';
 import { Model } from 'mongoose';
 import { EventsDto } from './dto/events.dto';
 import { VoteEventDto } from './dto/events.vote.dto';
@@ -19,10 +19,10 @@ export class EventsService {
     private readonly participantService: ParticipantService,
   ) {}
 
-  async createV1(createEventDto: EventsDto) {
+  async create(createEventDto: EventsDto) {
     // handle duplicated events
     const eventName = createEventDto.name.trim();
-    const duplicatedEvent = await this.findOneByNameV1(eventName);
+    const duplicatedEvent = await this.findOneByName(eventName);
 
     if (duplicatedEvent) {
       throw new ConflictException(
@@ -36,7 +36,7 @@ export class EventsService {
     return createdEvent._id;
   }
 
-  async findAllV1() {
+  async findAll() {
     const allEvents = await this.eventModel
       .find({}, { dates: 0, __v: 0 })
       .exec();
@@ -44,25 +44,29 @@ export class EventsService {
     return allEvents;
   }
 
-  async findOneByIdV1(eventId: string) {
+  async findOneById(eventId: string) {
     return await this.eventModel.findOne({ _id: eventId }).lean();
   }
 
-  async findOneByNameV1(eventName: string) {
+  async findOneByName(eventName: string) {
     return await this.eventModel.findOne({ name: eventName }).lean();
   }
 
-  async updateV1(eventId: string, eventData: EventsDto) {
+  async update(eventId: string, eventData: EventsDto) {
     // check if the event exists
-    const foundEvent = await this.findOneByIdV1(eventId);
+    const foundEvent = await this.findOneById(eventId);
 
     if (!foundEvent) {
       throw new NotFoundException(`Event with id ${eventId} not found!`);
     }
 
-    const updatedEvent = await this.eventModel.findByIdAndUpdate(eventId, {
-      ...eventData,
-    });
+    const updatedEvent = await this.eventModel.findByIdAndUpdate(
+      eventId,
+      {
+        ...eventData,
+      },
+      { new: true },
+    );
 
     if (!updatedEvent) {
       throw new InternalServerErrorException('Failed to updated the event');
@@ -71,9 +75,9 @@ export class EventsService {
     return updatedEvent;
   }
 
-  async createVoteV1(eventId: string, eventData: VoteEventDto) {
+  async createVote(eventId: string, eventData: VoteEventDto) {
     // check if the event exists
-    const foundEvent = await this.findOneByIdV1(eventId);
+    const foundEvent = await this.findOneById(eventId);
 
     if (!foundEvent) {
       throw new NotFoundException(`Event with id: ${eventId} not found!`);
@@ -128,14 +132,22 @@ export class EventsService {
       }
 
       // update the event with the constituted array
-      const updatedVoteEvent = await this.updateV1(eventId, {
+
+      await this.update(eventId, {
         ...foundEvent,
         votes,
       });
-
-      return updatedVoteEvent;
     });
 
-    // end
+    // check if the event exists
+    const foundUpdatedEvent = await this.findOneById(eventId);
+
+    if (!foundEvent) {
+      throw new NotFoundException(
+        `Updated event with id: ${eventId} not found!`,
+      );
+    }
+
+    return foundUpdatedEvent;
   }
 }

@@ -8,6 +8,7 @@ async function bootstrap() {
   // enable URI versioning
   app.enableVersioning({
     type: VersioningType.URI,
+    prefix: 'api/',
   });
   await app.listen(process.env.PORT ?? 3000);
 }
